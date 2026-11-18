@@ -13,6 +13,12 @@
       "label": "Seconds per flag",
       "default": "5",
       "max_length": 3
+    },
+    "initial": {
+      "type": "string",
+      "label": "Startup flag code",
+      "default": "ua",
+      "max_length": 8
     }
   }
 }

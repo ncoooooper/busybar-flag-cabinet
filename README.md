@@ -4,7 +4,7 @@ Put a small national flag on the front of the bar. The rear screen gives its nam
 
 ## Setup
 
-Open **Apps → Flag Cabinet → Setup**. Set **Favorite flag codes** to `ua,pl` and **Seconds per flag** to `5`. Restart the app after saving. Each flag is bundled with the app. No account, companion, or internet connection is required. The picker includes all 254 entries in the country flag image archive. The separate US-state collection is outside this pack.
+Open **Apps → Flag Cabinet → Setup**. Set **Startup flag code** to `pl` to open on Poland or leave `ua` for Ukraine. Set **Favorite flag codes** to `ua,pl` and **Seconds per flag** to `5`. Restart the app after saving. Each flag is bundled with the app. No account, companion, or internet connection is required. The picker includes all 254 entries in the country flag image archive. The separate US-state collection is outside this pack.
 
 ## Switch between Ukraine and Poland
 
