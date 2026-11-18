@@ -1,0 +1,18 @@
+{
+  "format_version": 1,
+  "version": 1,
+  "fields": {
+    "favorites": {
+      "type": "string",
+      "label": "Favorite flag codes",
+      "default": "ua,pl",
+      "max_length": 150
+    },
+    "seconds": {
+      "type": "string",
+      "label": "Seconds per flag",
+      "default": "5",
+      "max_length": 3
+    }
+  }
+}

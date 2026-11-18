@@ -1,66 +1,22 @@
-import { device } from "@shared/device";
-import { column, render, type Node } from "@busy-app/busy-lib";
-import manifest from "./appmeta/manifest.json";
-
-/** The name the app draws under; the device clears elements by this id. */
-const APP = manifest.id;
-
-/** How often the screen is redrawn. */
-const TICK_MS = 1000;
-
-const WHITE = "#FFFFFFFF";
-const SUBTLE_WHITE = "#FFFFFF80";
-
-/**
- * The frame drawn on every tick. The screen is 72×16, so two short lines are about all that fits.
- */
-function frame(ticks: number): Node {
-  return column({ justify: "center", align: "center" }, [
-    { type: "text", id: "title", text: "Hello", font: "bold", color: WHITE },
-    {
-      type: "text",
-      id: "ticks",
-      text: String(ticks),
-      font: "small",
-      color: SUBTLE_WHITE,
-    },
-  ]);
+import flags from "./flags.json";
+import {surface,panel,wrap,read,persist,type Frame} from "@shared/surface";
+import {loadValues} from "@shared/settings";
+const all=flags as [string,string,number][];
+let favorites=["ua","pl"],only=false,rotate=false,seconds=5;
+let index=all.findIndex(f=>f[0]==="ua");
+let timer:ReturnType<typeof setInterval>|undefined;
+function choices(){return only?all.filter(f=>favorites.includes(f[0])):all;}
+function step(dir:number){index=wrap(index+dir,choices().length);}
+function draw():Frame{
+ const list=choices(),[code,name,width]=list[index];
+ return [{type:"image",id:"flag",display:"front",x:Math.floor((72-width)/2),y:0,align:"top_left",path:"images/"+code+".png"},
+ ...panel(name,[code.toUpperCase()+"  "+(index+1)+"/"+list.length,only?"Favorites":"All flags",rotate?"Rotating every "+seconds+"s":"Wheel: choose flag","Click: all / favorites","Start: rotate / stop","Hold click: add / remove"])];
 }
-
-/** Sends one frame to the device. */
-async function draw(ticks: number): Promise<void> {
-  const elements = render(frame(ticks));
-  await device.DisplayDraw({ application_name: APP, priority: 50, elements });
-}
-
-/**
- * Entry point, called at the end of the file: the device runs this script from top to bottom and starts nothing by itself.
- */
-function main(): void {
-  let ticks = 0;
-  let stopped = false;
-
-  const report = (err: unknown) =>
-    console.error(`${APP}: ${err instanceof Error ? err.message : String(err)}`);
-
-  void draw(ticks).catch(report);
-
-  // Tick errors are reported, not thrown: one failed request must not stop the loop.
-  const timer = setInterval(() => {
-    ticks += 1;
-    void draw(ticks).catch(report);
-  }, TICK_MS);
-
-  // Back leaves the app. Once the timer is cleared and the handler detached, nothing keeps it alive and the device takes the screen back.
-  const unbind = listen("input", (event) => {
-    if (stopped || event.key !== "back" || event.action !== "short") return;
-
-    stopped = true;
-    clearInterval(timer);
-
-    // Not detached from inside the handler itself: with nothing else left the unbind stops the app on the spot, while this handler is still running.
-    setTimeout(unbind, 0);
-  });
-}
-
-main();
+const refresh=surface(draw,k=>{
+ const current=choices()[index][0];
+ if(k==="up"||k==="down")step(k==="up"?1:-1);
+ if(k==="ok"&&favorites.length){only=!only;index=Math.max(0,choices().findIndex(f=>f[0]===current));}
+ if(k==="hold-ok"){favorites=favorites.includes(current)?favorites.filter(c=>c!==current):favorites.concat(current);persist("favorites",favorites);if(!favorites.length)only=false;index=Math.min(index,choices().length-1);}
+ if(k==="start"){rotate=!rotate;if(timer!==undefined)clearInterval(timer);if(rotate)timer=setInterval(()=>{step(1);refresh();},1000*seconds);}
+},()=>{if(timer!==undefined)clearInterval(timer);},{enabled:false});
+void loadValues().then(v=>{const codes=String(v?.favorites||"ua,pl").toLowerCase().split(",").map(s=>s.trim());favorites=read("favorites",codes).filter(c=>all.some(f=>f[0]===c));seconds=Math.max(1,Math.min(300,Number(v?.seconds)||5));refresh();});
