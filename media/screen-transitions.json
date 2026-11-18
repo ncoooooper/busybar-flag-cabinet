@@ -1,0 +1,48 @@
+{
+  "app": "busybar-flag-cabinet",
+  "sha256": "7ceafcd69bf9efe9d6b0dfeca6e226eb1466a813a6ef7ea927115335a7e66df6",
+  "firmware": "1.3.1",
+  "cell": 16,
+  "lit": 14,
+  "front": [
+    72,
+    16
+  ],
+  "rear": [
+    160,
+    80
+  ],
+  "captures": [
+    {
+      "mode": "extended",
+      "guides": [
+        "use-1",
+        "use-2"
+      ],
+      "tour": "screen-transitions",
+      "input": [
+        [
+          "ok",
+          "up"
+        ],
+        [
+          "down",
+          "up"
+        ],
+        [
+          "down",
+          "up",
+          "ok"
+        ]
+      ],
+      "distinct_frames": [
+        9,
+        9,
+        29
+      ],
+      "rear_frames": 6,
+      "rear_tour": "screen-transitions-rear",
+      "exit": "finished"
+    }
+  ]
+}
